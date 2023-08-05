@@ -1,2 +1,3 @@
 from stock_mantain_flask import  app
-pp =app()
+if __name__ == '__main__':
+    app.run()
