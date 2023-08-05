@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 80%;
+}
+ tr:hover {
+      background-color: #f2f2f2;
+      cursor: pointer;
+    }
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+  body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #007BFF;
+      color: #fff;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+    .popup-content {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+     .popup-container {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: white;
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+    .deliverTableClass{
+            display: inline-table;
+            position: relative;
+            top: 10%;
+    }
+    .container {
+         max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .delivTable{
+    max-height: 50vh;
+    overflow-y: scroll;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    }
+
+     .itemTable{
+    max-height: 80vh;
+    overflow-y: scroll;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    }
+
+    .toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  font-weight: bold;
+}
+
+.success {
+  background-color: #4CAF50;
+  color: #fff;
+}
+
+
+</style>
+</head>
+<body>
+     <div class="popup-container" style="justify-content: start;flex-direction: column;" id="QtyEditPopupContainer">
+         <form>
+      <h2 id="itemHeader"></h2>
+      <label for="quantity">Quantity:</label>
+      <input type="number" id="qty" name="quantity" min="1" value="1">
+
+      <label for="deliveredBy">Delivered By:</label>
+      <input type="text" id="deliveredBy" name="deliveredBy">
+
+      <label for="deliveredTo">Delivered To:</label>
+      <input type="text" id="deliveredTo" name="deliveredTo">
+
+      <button class="btn" onclick="hidePopup('QtyEditPopupContainer')">Close</button>
+        <button class="btn" onclick="saveItemDelivery()">Save</button>
+               </form>
+         <div class="delivTable">
+             <table class ="deliverTableClass" id="dataTable">
+        <thead>
+            <tr>
+                <th>sno</th>
+                <th>Date</th>
+                <th>From</th>
+                <th>To</th>
+                <th>QTY</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Table rows will be dynamically added here -->
+        </tbody>
+    </table>
+         </div>
+
+    </div>
+
+     <div class="popup-container" id="editItempopupContainer">
+   <form>
+       <label id="editUid"></label>
+    <label for="item">Item:</label>
+    <input type="text" id="editIitem" name="item">
+
+    <label for="itemDescription">Item Description:</label>
+    <input type="text" id="editItemDescription" name="itemDescription">
+
+    <button type="submit"  onclick="editItem()">Save</button>
+    <button class="btn" onclick="hidePopup('popupContainer)">Close</button>
+    </form>
+       </div>
+
+   <div class="popup-container" id="popupContainer">
+   <form>
+    <label for="item">Item:</label>
+    <input type="text" id="item" name="item" required>
+
+    <label for="itemDescription">Item Description:</label>
+    <input type="text" id="itemDescription" name="itemDescription" required>
+
+    <label for="quantity">Quantity:</label>
+    <input type="number" id="quantity" name="quantity" min="1" value="1" required>
+
+    <button type="submit"  onclick="saveData()">Save</button>
+    <button class="btn" onclick="hidePopup('popupContainer)">Close</button>
+
+  </form>
+       </div>
+      <script>
+
+    function saveData() {
+      const item = document.getElementById("item").value;
+      const itemDescription = document.getElementById("itemDescription").value;
+      const quantity = document.getElementById("quantity").value;
+
+      const data = {
+        item: item,
+        itemDescription: itemDescription,
+        qty:parseInt(quantity)
+      };
+      fetch('/saveItem', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(response => {
+         home()
+      })
+      .catch(error => {
+      });
+    }
+
+
+  </script>
+<button  onclick="showPopup('popupContainer')">Add Item</button>
+<script>
+    function showPopup(id) {
+      document.getElementById(id).style.display = 'flex';
+    }
+    function showEditItemPopup(uid,item,itemDisc){
+    document.getElementById('editItempopupContainer').style.display = 'flex';
+         document.getElementById('editUid').innerHTML = uid;
+        document.getElementById('editIitem').value = item; // Use .value to set input values
+        document.getElementById('editItemDescription').value = itemDisc;
+
+    }
+    function hidePopup() {
+      document.getElementById(id).style.display = 'none';
+    }
+  </script>
+
+  <div class="itemTable">
+      <table id="myTable">
+    <tr style="text-align":center>
+      <th>Item</th>
+      <th>Item Discription</th>
+      <th>QTy</th>
+        <th style="width: 40%;">QTY Edit </th>
+  </tr>
+    {% for item in items: %}
+  <tr class = {{item.uid}} headers= {{item.item}}  style="text-align":center>
+      <td  class ={{item.uid}} headers= {{item.item}} >{{item.item}}</td>
+      <td class ={{item.uid}} headers= {{item.item}}>{{item.itemDescription}}</td>
+      <td class ={{item.uid}} headers= {{item.item}}> {{item.qty}}</td>
+      <td class="">
+      <input type="number"  style="max-width: 8.5em;" id={{item.uid}} placeholder="Edit qty" ><span>
+          <button class="save-button" onclick="editQty({{item.uid}})">Save</button></span>
+            <span ><button class="edit-icon" onclick="showEditItemPopup({{item.uid}},'{{item.item}}', '{{item.itemDescription}}')" >&#9998;</button></span>
+      </td>
+  </tr>
+    {% endfor %}
+  </table>
+  </div>
+
+     <script>
+            function editItem(){
+            const uid = document.getElementById('editUid').innerHTML;
+            const item = document.getElementById("editIitem").value
+            const itemDisc = document.getElementById("editItemDescription").value
+
+            const data = {
+         uid:uid,
+        item:item,
+        itemDisc: itemDisc,
+      };
+            fetch('/editItem', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(response => {
+      home()
+      })
+      .catch(error => {
+      });
+    }
+     </script>
+
+     <script>
+         function editQty(uid){
+            const qty = document.getElementById(uid).value
+            const data = {
+        uid:uid,
+        qty: qty,
+      };
+            fetch('/editStockQty', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(response => {
+      home()
+      })
+      .catch(error => {
+      });
+    }
+
+
+     </script>
+
+     <script>
+function home(){
+ window.location.assign("/")
+}
+</script>
+
+   <script >
+         document.getElementById('myTable').addEventListener('click',function(){showElem(event)},false );
+         function showElem (event) {
+         console.log('Clicked row ID:', event);
+      if (event.target.headers) {
+        document.getElementById('QtyEditPopupContainer').style.display = 'flex';
+        const rowId = event.target.classList[0];
+        console.log('Clicked row ID:', rowId);
+         let url = "/getDeliveryEntries/".concat(rowId)
+        fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(response => {
+        document.getElementById('itemHeader').innerHTML = response.item;
+
+         const tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = ''; // Clear existing rows
+
+            response.itemDeliveries.forEach((item, index) => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `<td>${index + 1}</td>
+                                 <td>${item.date}</td>
+                                 <td>${item.deliveredBy}</td>
+                                 <td>${item.deliveredTo}</td>
+                                 <td>${item.qty}</td>`;
+            });
+      })
+      .catch(error => {
+      });
+
+      }}
+
+   </script>
+
+<script>
+
+    function saveItemDelivery() {
+      const item = document.getElementById("itemHeader").innerHTML;
+      const deliveredBy = document.getElementById("deliveredBy").value;
+      const deliveredTo = document.getElementById("deliveredTo").value;
+      const qty = document.getElementById("qty").value;
+
+      const data = {
+        uid:item,
+        date: new Date(),
+        deliveredBy: deliveredBy,
+        deliveredTo: deliveredTo,
+        qty:parseInt(qty)
+      };
+      fetch('/saveDeliveryEntry', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => {response.json()
+
+      })
+      .then(response => {
+               home()
+      })
+      .catch(error => {
+            showToast(error,'error')
+      });
+    }
+
+
+  </script>
+<script>
+    function showToast(message,classType) {
+  // Create a new div element for the toast
+  const toast = document.createElement("div");
+  toast.classList.add("toast",classType);
+  toast.textContent = message;
+
+  // Append the toast to the document body
+  document.body.appendChild(toast);
+
+  // Automatically remove the toast after a few seconds (e.g., 3 seconds)
+  setTimeout(function() {
+    document.body.removeChild(toast);
+  }, 3000); // 3000 milliseconds = 3 seconds
+}
+</script>
+</body>
+</html>
