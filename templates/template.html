@@ -3,114 +3,179 @@
 <head>
 
     <style>
-table {
-  font-family: arial, sans-serif;
-  border-collapse: collapse;
-  width: 80%;
+      /* Shared styles for both desktop and mobile */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f0f8ff; /* Light sky blue background */
 }
- tr:hover {
-      background-color: #f2f2f2;
-      cursor: pointer;
-    }
+
+table {
+    font-family: Arial, sans-serif;
+    border-collapse: collapse;
+    width: 80%;
+    background-color: #fff; /* White background for the table */
+    border: 1px solid #87cefa; /* Light sky blue border */
+}
+
+tr:hover {
+    background-color: #e6f7ff; /* Lighter shade of sky blue for row hover */
+    cursor: pointer;
+}
+
 td, th {
-  border: 1px solid #dddddd;
-  text-align: left;
-  padding: 8px;
+    border: 1px solid #87cefa; /* Light sky blue border for cells */
+    text-align: left;
+    padding: 8px;
+}
+
+th {
+    background-color: #87cefa; /* Light sky blue header */
+    color: #fff; /* White text color for header */
 }
 
 tr:nth-child(even) {
-  background-color: #dddddd;
+    background-color: #e6f7ff; /* Lighter shade of sky blue for even rows */
 }
-  body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
 
-    label {
-      display: block;
-      margin-bottom: 5px;
-    }
+input[type="text"],
+input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    border: 1px solid #87cefa; /* Light sky blue border for inputs */
+    border-radius: 5px;
+}
 
-    input[type="text"],
-    input[type="number"] {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      box-sizing: border-box;
-    }
+button {
+    background-color: #87cefa; /* Light sky blue button */
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
 
-    button {
-      background-color: #007BFF;
-      color: #fff;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+button:hover {
+    background-color: #5f9ea0; /* Darker shade of sky blue for button hover */
+}
 
-    button:hover {
-      background-color: #0056b3;
-    }
-    .popup-content {
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 5px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    }
-     .popup-container {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: white;
-      z-index: 9999;
-      justify-content: center;
-      align-items: center;
-    }
-    .deliverTableClass{
-            display: inline-table;
-            position: relative;
-            top: 10%;
-    }
-    .container {
-         max-width: 400px;
-      margin: 0 auto;
-      padding: 20px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    .delivTable{
+.popup-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.popup-container {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+.deliverTableClass {
+    display: inline-table;
+    position: relative;
+    top: 10%;
+}
+
+.container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.delivTable {
     max-height: 50vh;
     overflow-y: scroll;
     width: 100%;
     display: flex;
     justify-content: center;
-    }
+}
 
-     .itemTable{
+.itemTable {
     max-height: 80vh;
     overflow-y: scroll;
     width: 100%;
     display: flex;
     justify-content: center;
-    }
+}
 
-    .toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  font-weight: bold;
+.toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
 }
 
 .success {
-  background-color: #4CAF50;
-  color: #fff;
+    background-color: #4CAF50;
+    color: #fff;
+}
+
+/* Mobile responsive styles */
+@media screen and (max-width: 600px) {
+    /* Adjust the width and margin of the table on smaller screens */
+    table {
+        width: 100%;
+        margin: 0;
+    }
+
+    /* Center the table headers on smaller screens */
+    th {
+        text-align: center;
+    }
+
+    /* Increase the font size for better readability on smaller screens */
+    td, th {
+        font-size: 14px;
+    }
+
+    /* Increase the padding of the inputs for better touch interaction */
+    input[type="text"],
+    input[type="number"] {
+        padding: 12px;
+    }
+
+    /* Make buttons full width on smaller screens */
+    button {
+        width: 100%;
+    }
+
+    /* Adjust the position and size of popup containers on smaller screens */
+    .popup-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .deliverTableClass {
+        top: 5%;
+    }
+
+    .container {
+        max-width: 100%;
+        padding: 10px;
+    }
+
+    /* Adjust the height of the delivery and item tables on smaller screens */
+    .delivTable, .itemTable {
+        max-height: 30vh;
+    }
 }
 
 
