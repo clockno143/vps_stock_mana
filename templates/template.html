@@ -27,6 +27,7 @@ td, th {
     border: 1px solid #87cefa; /* Light sky blue border for cells */
     text-align: left;
     padding: 8px;
+    overflow-wrap: break-word;
 }
 
 th {
@@ -78,7 +79,6 @@ button:hover {
     background-color: white;
     z-index: 9999;
     justify-content: center;
-    align-items: center;
 }
 
 .deliverTableClass {
@@ -126,56 +126,56 @@ button:hover {
     background-color: #4CAF50;
     color: #fff;
 }
+td.stockLoaded{
+    background-color: yellow;
+}
 
 /* Mobile responsive styles */
-@media screen and (max-width: 600px) {
+@media (pointer:coarse) {
+    body{
+        font-size: 2.9rem;
+    }
     /* Adjust the width and margin of the table on smaller screens */
     table {
         width: 100%;
         margin: 0;
-    }
+font-size: 2.7rem;        }
 
     /* Center the table headers on smaller screens */
     th {
         text-align: center;
     }
 
-    /* Increase the font size for better readability on smaller screens */
-    td, th {
-        font-size: 14px;
+    input[type="text"], input[type="number"]{
+        font-size: 2.9rem;
+        width:88%;
+        margin-left:2%;
     }
-
-    /* Increase the padding of the inputs for better touch interaction */
-    input[type="text"],
-    input[type="number"] {
-        padding: 12px;
+    label{
+     margin-left: 2%;
+     font-size: 2.9rem;
     }
-
-    /* Make buttons full width on smaller screens */
-    button {
-        width: 100%;
-    }
-
-    /* Adjust the position and size of popup containers on smaller screens */
     .popup-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    z-index: 9999;
+    justify-content: center;
+    align-top: 18%;
+}
+    button{
+     font-size: 2.9rem;
+      margin-left: 2%;
     }
+    td.stockLoaded{
+    background-color: yellow;
+}
 
-    .deliverTableClass {
-        top: 5%;
-    }
 
-    .container {
-        max-width: 100%;
-        padding: 10px;
-    }
-
-    /* Adjust the height of the delivery and item tables on smaller screens */
-    .delivTable, .itemTable {
-        max-height: 30vh;
-    }
 }
 
 
@@ -233,13 +233,13 @@ button:hover {
    <div class="popup-container" id="popupContainer">
    <form>
     <label for="item">Item:</label>
-    <input type="text" id="item" name="item" required>
+    <input type="text" id="item" name="item" >
 
     <label for="itemDescription">Item Description:</label>
-    <input type="text" id="itemDescription" name="itemDescription" required>
+    <input type="text" id="itemDescription" name="itemDescription" >
 
     <label for="quantity">Quantity:</label>
-    <input type="number" id="quantity" name="quantity" min="1" value="1" required>
+    <input type="number" id="quantity" name="quantity" min="1" value="1" >
 
     <button type="submit"  onclick="saveData()">Save</button>
     <button class="btn" onclick="hidePopup('popupContainer)">Close</button>
@@ -292,7 +292,11 @@ button:hover {
     }
   </script>
 
+   <div class="search-container">
+  <input type="text" id="searchInput" placeholder="Search...">
+</div>
   <div class="itemTable">
+
       <table id="myTable">
     <tr style="text-align":center>
       <th>Item</th>
@@ -348,6 +352,7 @@ button:hover {
             const data = {
         uid:uid,
         qty: qty,
+        date:new Date()
       };
             fetch('/editStockQty', {
         method: 'PUT',
@@ -397,11 +402,11 @@ function home(){
 
             response.itemDeliveries.forEach((item, index) => {
                 const row = tableBody.insertRow();
-                row.innerHTML = `<td>${index + 1}</td>
-                                 <td>${item.date}</td>
-                                 <td>${item.deliveredBy}</td>
-                                 <td>${item.deliveredTo}</td>
-                                 <td>${item.qty}</td>`;
+                row.innerHTML = `<td class = ${item.stockLoaded}>${index + 1}</td>
+                                 <td class = ${item.stockLoaded}>${item.date}</td>
+                                 <td class = ${item.stockLoaded}>${item.deliveredBy}</td>
+                                 <td class = ${item.stockLoaded}>${item.deliveredTo}</td>
+                                 <td class = ${item.stockLoaded} >${item.qty}</td>`;
             });
       })
       .catch(error => {
@@ -410,6 +415,29 @@ function home(){
       }}
 
    </script>
+     <script>
+  function filterTable() {
+    const input = document.getElementById('searchInput');
+    const filter = input.value.toLowerCase();
+    const table = document.getElementById('myTable');
+    const rows = table.getElementsByTagName('tr');
+
+    for (let i = 1; i < rows.length; i++) { // Start from 1 to skip header row
+      const rowData = rows[i].innerText.toLowerCase();
+
+      if (rowData.includes(filter)) {
+        rows[i].style.display = '';
+      } else {
+        rows[i].style.display = 'none';
+      }
+    }
+  }
+
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('keyup', filterTable);
+</script>
+
+
 
 <script>
 

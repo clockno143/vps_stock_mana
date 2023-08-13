@@ -1,14 +1,20 @@
 from pymongo import MongoClient
 from flask import Flask,request,jsonify
 from flask import  render_template
+from datetime import datetime
 
 def establishMongoConnectionAndgetDb():
     client = MongoClient("mongodb+srv://vps:vps123@cluster0.tpkcrim.mongodb.net/?retryWrites=true&w=majority")
     db = client.get_database('VPS')
     return  db
+def emptyCheck(arr):
+    for elem in  arr.values():
+        if elem == "" or elem is None :
+            return True
+    return  False
 
 def getAllItemsFromDB(db):
-    return db.stock.find();
+    return db.stock.find().sort("item",1);
 def saveItemTodb(db,obj):
     return db.stock.insert_one(obj);
 def saveDeliveryEntryToDb(db, obj):
@@ -43,6 +49,8 @@ def hello_world():
 def save_item():
       try:
         data = request.get_json()  # Get the JSON data from the request
+        if emptyCheck(data):
+            return  jsonify({"error": "Empty fields."}), 500
         data['uid'] = findAndModSeq(db)
         saveItemTodb(db,data)
         return jsonify({"success": "Successfully Inserted."}), 200
@@ -53,6 +61,8 @@ def save_item():
 def save_deliveryEntry():
       try:
         data = request.get_json()  # Get the JSON data from the request
+        if emptyCheck(data):
+            return  jsonify({"error": "Empty fields."}), 500
         saveDeliveryEntryToDb(db,data)
         print(data)
         updateDecQty(db,data['uid'],int(data['qty'])*-1)
@@ -68,8 +78,22 @@ def get_itemDeliveries(item):
 @app.route('/editStockQty', methods=['PUT'])
 def edit_stock_qty():
       try:
-        data = request.get_json()  # Get the JSON data from the request)
+        data = request.get_json() # Get the JSON data from the request)
+        if emptyCheck(data):
+            return  jsonify({"error": "Empty fields."}), 500
         updateDecQty(db,data['uid'],int(data['qty']))
+        reqObj = {}
+        reqObj['uid'] = str(data['uid'])
+        reqObj['qty'] = abs(int(data['qty']))
+        reqObj['date'] = data['date']
+        if(int(data['qty'])>0):
+            reqObj['stockLoaded'] = 'stockLoaded'
+            reqObj['deliveredTo'] = 'IN'
+            reqObj['deliveredBy'] = '_'
+        else:
+            reqObj['deliveredTo'] = 'Cash'
+            reqObj['deliveredBy'] = '_'
+        saveDeliveryEntryToDb(db,reqObj)
         return jsonify({"success": "Successfully Updated Quantity."}), 200
       except Exception as e:
           return jsonify({"error": "An error occurred. Please try again later."}), 500
@@ -79,6 +103,8 @@ def edit_stock_qty():
 def edit_item():
     try:
         data = request.get_json()  # Get the JSON data from the request)
+        if emptyCheck(data):
+            return  jsonify({"error": "Empty fields."}), 500
         updateItem(db, data['uid'], data['item'],data['itemDisc'])
         return jsonify({"success": "Successfully Updated Quantity."}), 200
     except Exception as e:
