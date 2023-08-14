@@ -310,7 +310,7 @@ font-size: 2.7rem;        }
       <td class ={{item.uid}} headers= {{item.item}}>{{item.itemDescription}}</td>
       <td class ={{item.uid}} headers= {{item.item}}> {{item.qty}}</td>
       <td class="">
-      <input type="number"  style="max-width: 8.5em;" id={{item.uid}} placeholder="Edit qty" ><span>
+      <input type="number"  style="max-width: 8.5em;" id={{item.uid}}  placeholder="Edit qty" ><span>
           <button class="save-button" onclick="editQty({{item.uid}})">Save</button></span>
             <span ><button class="edit-icon" onclick="showEditItemPopup({{item.uid}},'{{item.item}}', '{{item.itemDescription}}')" >&#9998;</button></span>
       </td>

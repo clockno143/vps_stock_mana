@@ -3,17 +3,22 @@ from flask import Flask,request,jsonify
 from flask import  render_template
 from datetime import datetime
 
+
 def establishMongoConnectionAndgetDb():
     client = MongoClient("mongodb+srv://vps:vps123@cluster0.tpkcrim.mongodb.net/?retryWrites=true&w=majority")
     db = client.get_database('VPS')
     return  db
 def emptyCheck(arr):
+    print("checking empty Values",arr)
     for elem in  arr.values():
         if elem == "" or elem is None :
+            print("Empty value Found",elem)
             return True
     return  False
 
 def getAllItemsFromDB(db):
+    db.stock.create_index("uid")
+    db.itemDelivery.create_index("uid")
     return db.stock.find().sort("item",1);
 def saveItemTodb(db,obj):
     return db.stock.insert_one(obj);
@@ -55,6 +60,7 @@ def save_item():
         saveItemTodb(db,data)
         return jsonify({"success": "Successfully Inserted."}), 200
       except Exception as e:
+          print("Exception occured while saving Item",e)
           return jsonify({"error": "An error occurred. Please try again later."}), 500
 
 @app.route('/saveDeliveryEntry', methods=['PUT'])
@@ -66,6 +72,7 @@ def save_deliveryEntry():
         saveDeliveryEntryToDb(db,data)
         print(data)
         updateDecQty(db,data['uid'],int(data['qty'])*-1)
+        print("Exception occured while saving Delivery Entry", e)
         return jsonify({"success": "Successfully Inserted."}), 200
       except Exception as e:
           return jsonify({"error": "An error occurred. Please try again later."}), 500
@@ -96,6 +103,7 @@ def edit_stock_qty():
         saveDeliveryEntryToDb(db,reqObj)
         return jsonify({"success": "Successfully Updated Quantity."}), 200
       except Exception as e:
+          print("Exception occured while Editing Qty", e)
           return jsonify({"error": "An error occurred. Please try again later."}), 500
 
 
@@ -108,6 +116,7 @@ def edit_item():
         updateItem(db, data['uid'], data['item'],data['itemDisc'])
         return jsonify({"success": "Successfully Updated Quantity."}), 200
     except Exception as e:
+        print("Exception occured while Editing Item", e)
         return jsonify({"error": "An error occurred. Please try again later."}), 500
 
 
