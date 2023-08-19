@@ -1,15 +1,24 @@
-table {
-  font-family: arial, sans-serif;
-  border-collapse: collapse;
-  width: 100%;
+const overlay = document.getElementById("overlay");
+
+function showLoader() {
+  overlay.style.display = "flex";
+  overlay.style.pointerEvents = "auto"; // Enable interactions with the loader
 }
 
-td {
-  border: 1px solid #dddddd;
-  text-align: left;
-  padding: 8px;
+function hideLoader() {
+  overlay.style.display = "none";
 }
 
-tr:nth-child(even) {
-  background-color: #dddddd;
+// Simulate a network call
+function performNetworkCall() {
+  showLoader();
+
+  // Simulating a network delay
+  setTimeout(function() {
+    hideLoader();
+  }, 2000);
 }
+
+// Attach the network call to the button's click event
+const actionButton = document.getElementById("actionButton");
+actionButton.addEventListener("click", performNetworkCall);

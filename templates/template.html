@@ -10,6 +10,7 @@ body {
     background-color: #f0f8ff; /* Light sky blue background */
 }
 
+
 table {
     font-family: Arial, sans-serif;
     border-collapse: collapse;
@@ -17,7 +18,11 @@ table {
     background-color: #fff; /* White background for the table */
     border: 1px solid #87cefa; /* Light sky blue border */
 }
+h2
+{
+            text-align: center;
 
+}
 tr:hover {
     background-color: #e6f7ff; /* Lighter shade of sky blue for row hover */
     cursor: pointer;
@@ -35,8 +40,10 @@ th {
     color: #fff; /* White text color for header */
 }
 
+
+
 tr:nth-child(even) {
-    background-color: #e6f7ff; /* Lighter shade of sky blue for even rows */
+    background-color: #e6f7ff;
 }
 
 input[type="text"],
@@ -57,11 +64,37 @@ button {
     border-radius: 5px;
     cursor: pointer;
 }
-
-button:hover {
-    background-color: #5f9ea0; /* Darker shade of sky blue for button hover */
+.toast-container1 {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100000000;
 }
 
+.toast1 {
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.toast1.success {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.toast1.error {
+  background-color: #FF5733;
+  color: white;
+}
+
+.loader {
+    display: none;
+    position: fixed;
+    left: 45%;
+    top: 45%;
+    z-index: 100000;
+  }
 .popup-content {
     background-color: #fff;
     padding: 20px;
@@ -133,9 +166,16 @@ td.stockLoaded{
 /* Mobile responsive styles */
 @media (pointer:coarse) {
     body{
-        font-size: 2.9rem;
+        font-size: 2.9rem !important;
     }
-    /* Adjust the width and margin of the table on smaller screens */
+    .dropdown-item{
+         font-size: 2.9rem !important;
+    }
+    h2{
+            font-size: 3rem !important;
+            font-weight: bold !important;
+            text-align: center;
+        }
     table {
         width: 100%;
         margin: 0;
@@ -168,8 +208,8 @@ font-size: 2.7rem;        }
     align-top: 18%;
 }
     button{
-     font-size: 2.9rem;
-      margin-left: 2%;
+     font-size: 2.9rem !important;
+      margin-left: 2% !important;
     }
     td.stockLoaded{
     background-color: yellow;
@@ -180,11 +220,91 @@ font-size: 2.7rem;        }
 
 
 </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+
 </head>
 <body>
-     <div class="popup-container" style="justify-content: start;flex-direction: column;" id="QtyEditPopupContainer">
+<div style="display:none" class="spinner-border loader" id="load" role="status">
+  <span class="visually-hidden">Loading...</span>
+</div>
+  <div class="toast-container1" id="toastContainer"></div>
+
+<script>
+     function hideloader() {
+             const overlay = document.getElementById("load");
+            const body = document.getElementsByTagName("body")[0]
+            overlay.style.display = "none";
+            body.style.pointerEvents = "auto";
+             body.style.opacity ="1";
+                         home()
+
+        }
+</script>
+<script>
+        function showloader(){
+            const overlay = document.getElementById("load");
+            const body = document.getElementsByTagName("body")[0]
+            overlay.style.display = "flex";
+            body.style.pointerEvents = "none"; // Enable interactions with the loader
+             body.style.opacity ="0.2";
+}
+
+        function getDb(){
+            return localStorage.getItem("db")
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <nav class="navbar navbar-efxpand-lg bg-body-tertiary">
+  <div style ="background-color: #e6f7ff;" class="container-fluid">
+    <a class="navbar-brand" href="#"></a>
+      <div style="font-weight: bold;" >{{gd}}</div>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Select Gordens
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" onclick="changeGorden(1)" href="#">Car SHED</a></li>
+            <li><a class="dropdown-item" onclick="changeGorden(2)" href="#">SINGRI</a></li>
+            <li><a class="dropdown-item" onclick="changeGorden(3)" href="#">GD3</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <script>
+         function changeGorden(gd){
+         var db = "VPS"
+         if(gd != "1"){
+         db = "VPS"+gd
+             }
+         localStorage.setItem("db",db)
+               home()
+         }
+
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+    const db = localStorage.getItem("db")
+        const bodys = document.getElementsByTagName('body');
+        bodys[0].classList.add(db)
+        const search =  localStorage.getItem("st")
+    const input = document.getElementById('searchInput');
+       input.value = search;
+       filterTable()
+        })
+    </script>
+    <div class="popup-container" style="justify-content: start;flex-direction: column;" id="QtyEditPopupContainer">
          <form>
-      <h2 id="itemHeader"></h2>
+      <h2 style="display:none" id="itemHeader"></h2>
+             <h2 id="itemLable"></h2>
+
       <label for="quantity">Quantity:</label>
       <input type="number" id="qty" name="quantity" min="1" value="1">
 
@@ -194,8 +314,8 @@ font-size: 2.7rem;        }
       <label for="deliveredTo">Delivered To:</label>
       <input type="text" id="deliveredTo" name="deliveredTo">
 
-      <button class="btn" onclick="hidePopup('QtyEditPopupContainer')">Close</button>
-        <button class="btn" onclick="saveItemDelivery()">Save</button>
+      <button type="button" class="button" onclick="hidePopup('QtyEditPopupContainer')">Close</button>
+        <button type="button" class="button" onclick="saveItemDelivery()">Save</button>
                </form>
          <div class="delivTable">
              <table class ="deliverTableClass" id="dataTable">
@@ -225,8 +345,8 @@ font-size: 2.7rem;        }
     <label for="itemDescription">Item Description:</label>
     <input type="text" id="editItemDescription" name="itemDescription">
 
-    <button type="submit"  onclick="editItem()">Save</button>
-    <button class="btn" onclick="hidePopup('popupContainer)">Close</button>
+    <button type="button"  onclick="editItem()">Save</button>
+    <button type="button" class="button" onclick="hidePopup('editItempopupContainer')">Close</button>
     </form>
        </div>
 
@@ -241,8 +361,8 @@ font-size: 2.7rem;        }
     <label for="quantity">Quantity:</label>
     <input type="number" id="quantity" name="quantity" min="1" value="1" >
 
-    <button type="submit"  onclick="saveData()">Save</button>
-    <button class="btn" onclick="hidePopup('popupContainer)">Close</button>
+    <button type="button"  onclick="saveData()">Save</button>
+    <button class="button"  type="button" onclick="hidePopup('popupContainer')">Close</button>
 
   </form>
        </div>
@@ -252,33 +372,59 @@ font-size: 2.7rem;        }
       const item = document.getElementById("item").value;
       const itemDescription = document.getElementById("itemDescription").value;
       const quantity = document.getElementById("quantity").value;
-
+      const url = '/saveItem/'  + getDb()
       const data = {
         item: item,
         itemDescription: itemDescription,
         qty:parseInt(quantity)
       };
-      fetch('/saveItem', {
+      showloader()
+      fetch(url, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
       })
-      .then(response => response.json())
+      .then(response => response)
       .then(response => {
-         home()
+              hideloader()
+              showToast("success","success")
       })
       .catch(error => {
+            hideloader()
+           showToast("error","error")
       });
     }
 
 
   </script>
+    <script>
+        function home(){
+         let url ='/'+getDb()
+         fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response)
+      .then(response => {
+      const html = document.getElementByTag('body');
+      html.innerHTML = response;
+      })
+      .catch(error => {
+      });
+         }
+
+    </script>
 <button  onclick="showPopup('popupContainer')">Add Item</button>
 <script>
     function showPopup(id) {
       document.getElementById(id).style.display = 'flex';
+    }
+     function hidePopup(id) {
+      document.getElementById(id).style.display = 'none';
     }
     function showEditItemPopup(uid,item,itemDisc){
     document.getElementById('editItempopupContainer').style.display = 'flex';
@@ -287,9 +433,7 @@ font-size: 2.7rem;        }
         document.getElementById('editItemDescription').value = itemDisc;
 
     }
-    function hidePopup() {
-      document.getElementById(id).style.display = 'none';
-    }
+
   </script>
 
    <div class="search-container">
@@ -305,10 +449,10 @@ font-size: 2.7rem;        }
         <th style="width: 40%;">QTY Edit </th>
   </tr>
     {% for item in items: %}
-  <tr class = {{item.uid}} headers= {{item.item}}  style="text-align":center>
-      <td  class ={{item.uid}} headers= {{item.item}} >{{item.item}}</td>
-      <td class ={{item.uid}} headers= {{item.item}}>{{item.itemDescription}}</td>
-      <td class ={{item.uid}} headers= {{item.item}}> {{item.qty}}</td>
+  <tr class = {{item.uid}}  headers= "{{item.item}}"   style="text-align":center>
+      <td  class ={{item.uid}} headers= "{{item.item}}" >{{item.item}}</td>
+      <td class ={{item.uid}} headers= "{{item.item}}">{{item.itemDescription}}</td>
+      <td class ={{item.uid}} headers= "{{item.item}}"> {{item.qty}}</td>
       <td class="">
       <input type="number"  style="max-width: 8.5em;" id={{item.uid}}  placeholder="Edit qty" ><span>
           <button class="save-button" onclick="editQty({{item.uid}})">Save</button></span>
@@ -330,7 +474,10 @@ font-size: 2.7rem;        }
         item:item,
         itemDisc: itemDisc,
       };
-            fetch('/editItem', {
+      showloader()
+
+    const url = '/editItem/'+getDb()
+            fetch(url, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -339,12 +486,18 @@ font-size: 2.7rem;        }
       })
       .then(response => response.json())
       .then(response => {
-      home()
+            hideloader()
+              showToast("success","success")
       })
       .catch(error => {
+           hideloader()
+           showToast("error","error")
       });
     }
      </script>
+
+
+
 
      <script>
          function editQty(uid){
@@ -354,18 +507,23 @@ font-size: 2.7rem;        }
         qty: qty,
         date:new Date()
       };
-            fetch('/editStockQty', {
+            showloader()
+      const url = '/editStockQty/'+getDb()
+            fetch(url, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
       })
-      .then(response => response.json())
+      .then(response =>response)
       .then(response => {
-      home()
+      hideloader()
+              showToast("success","success")
       })
       .catch(error => {
+      hideloader()
+           showToast("error","error")
       });
     }
 
@@ -374,7 +532,20 @@ font-size: 2.7rem;        }
 
      <script>
 function home(){
- window.location.assign("/")
+    const overlay = document.getElementById("load");
+            const body = document.getElementsByTagName("body")[0]
+            overlay.style.display = "flex";
+            body.style.pointerEvents = "none"; // Enable interactions with the loader
+             body.style.opacity ="0.2";
+               const input = document.getElementById('searchInput');
+          const filter = input.value;
+            localStorage.setItem("st",filter)
+ const url = "/"+getDb()
+ window.location.assign(url)
+            overlay.style.display = "none";
+            body.style.pointerEvents = "auto";
+             body.style.opacity ="1";
+
 }
 </script>
 
@@ -386,7 +557,7 @@ function home(){
         document.getElementById('QtyEditPopupContainer').style.display = 'flex';
         const rowId = event.target.classList[0];
         console.log('Clicked row ID:', rowId);
-         let url = "/getDeliveryEntries/".concat(rowId)
+         let url = "/getDeliveryEntries/"+getDb()+"/".concat(rowId)
         fetch(url, {
         method: 'GET',
         headers: {
@@ -396,6 +567,7 @@ function home(){
       .then(response => response.json())
       .then(response => {
         document.getElementById('itemHeader').innerHTML = response.item;
+        document.getElementById('itemLable').innerHTML = event.target.headers;
 
          const tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
             tableBody.innerHTML = ''; // Clear existing rows
@@ -454,21 +626,23 @@ function home(){
         deliveredTo: deliveredTo,
         qty:parseInt(qty)
       };
-      fetch('/saveDeliveryEntry', {
+      const url = '/saveDeliveryEntry/'+getDb()
+            showloader()
+      fetch(url, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
       })
-      .then(response => {response.json()
-
-      })
+      .then(response => response)
       .then(response => {
-               home()
+      hideloader()
+              showToast("success","success")
       })
       .catch(error => {
-            showToast(error,'error')
+            hideloader()
+           showToast("error","error")
       });
     }
 
@@ -476,17 +650,17 @@ function home(){
   </script>
 <script>
     function showToast(message,classType) {
-  // Create a new div element for the toast
+    const toastContainer = document.getElementById('toastContainer');
   const toast = document.createElement("div");
-  toast.classList.add("toast",classType);
+  toast.classList.add("toast1",classType);
   toast.textContent = message;
 
-  // Append the toast to the document body
-  document.body.appendChild(toast);
+
+  toastContainer.appendChild(toast);
 
   // Automatically remove the toast after a few seconds (e.g., 3 seconds)
   setTimeout(function() {
-    document.body.removeChild(toast);
+    toastContainer.removeChild(toast);
   }, 3000); // 3000 milliseconds = 3 seconds
 }
 </script>
