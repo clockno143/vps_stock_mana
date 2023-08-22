@@ -4,9 +4,6 @@ from flask import  render_template
 from datetime import datetime
 
 
-def establishMongoConnectionAndgetDb():
-    client = MongoClient("mongodb+srv://vps:vps123@cluster0.tpkcrim.mongodb.net/?retryWrites=true&w=majority")
-    return  client
 def getDb(client,dbName):
     if dbName is None:
        return client.get_database("VPS")
@@ -46,8 +43,8 @@ def updateItem(db,uid,item, itemDisc):
      uid =int(uid)
      return db.stock.update_one({"uid": uid}, {"$set":{"item":item,"itemDescription":itemDisc}});
 
-client = establishMongoConnectionAndgetDb()
-
+client = MongoClient("mongodb+srv://vps:vps123@cluster0.tpkcrim.mongodb.net/?retryWrites=true&w=majority",
+                     maxPoolSize=20)
 
 # Flask constructor takes the name of
 # current module (__name__) as argument.
