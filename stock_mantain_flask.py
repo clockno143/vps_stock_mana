@@ -64,7 +64,7 @@ def favicon():
 @app.route('/<dbName>')
 def hello_world(dbName='VPS'):
     db = getDb(client,dbName)
-    return render_template('template.html',items=getAllItemsFromDB(db),selectedItem="",itemDeliveries =[],gd =getGdName(dbName))
+    return render_template('template.html',items=getAllItemsFromDB(db),selectedItem="",itemDeliveries =[],dbL= dbName, gd =getGdName(dbName))
 
 
 @app.route('/saveItem', methods=['PUT'])

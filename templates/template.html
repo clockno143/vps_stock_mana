@@ -240,6 +240,17 @@ font-size: 2.7rem;        }
 
         }
 </script>
+
+<script>
+     function hideloaderWithoutHome() {
+             const overlay = document.getElementById("load");
+            const body = document.getElementsByTagName("body")[0]
+            overlay.style.display = "none";
+            body.style.pointerEvents = "auto";
+             body.style.opacity ="1";
+
+        }
+</script>
 <script>
         function showloader(){
             const overlay = document.getElementById("load");
@@ -284,20 +295,23 @@ font-size: 2.7rem;        }
          if(gd != "1"){
          db = "VPS"+gd
              }
+             showloader()
          localStorage.setItem("db",db)
                home()
          }
-
+            hideloaderWithoutHome()
     </script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-    const db = localStorage.getItem("db")
+        showloader()
+            localStorage.setItem("db",'{{dbL}}')
         const bodys = document.getElementsByTagName('body');
-        bodys[0].classList.add(db)
+        bodys[0].classList.add('{{dbL}}')
         const search =  localStorage.getItem("st")
     const input = document.getElementById('searchInput');
        input.value = search;
        filterTable()
+       hideloaderWithoutHome()
         })
     </script>
     <div class="popup-container" style="justify-content: start;flex-direction: column;" id="QtyEditPopupContainer">
@@ -399,25 +413,18 @@ font-size: 2.7rem;        }
 
 
   </script>
-    <script>
-        function home(){
-         let url ='/'+getDb()
-         fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      .then(response => response)
-      .then(response => {
-      const html = document.getElementByTag('body');
-      html.innerHTML = response;
-      })
-      .catch(error => {
-      });
-         }
+<script>
+    window.addEventListener("beforeunload", function () {
+   showloader()
+});
 
-    </script>
+// Hide loader after the page is fully loaded (after reload)
+window.addEventListener("load", function () {
+    localStorage.setItem("db",'{{dbL}}')
+    hideloaderWithoutHome()
+});
+</script>
+
 <button  onclick="showPopup('popupContainer')">Add Item</button>
 <script>
     function showPopup(id) {
@@ -532,20 +539,13 @@ font-size: 2.7rem;        }
 
      <script>
 function home(){
-    const overlay = document.getElementById("load");
-            const body = document.getElementsByTagName("body")[0]
-            overlay.style.display = "flex";
-            body.style.pointerEvents = "none"; // Enable interactions with the loader
-             body.style.opacity ="0.2";
+        showloader()
                const input = document.getElementById('searchInput');
           const filter = input.value;
             localStorage.setItem("st",filter)
  const url = "/"+getDb()
  window.location.assign(url)
-            overlay.style.display = "none";
-            body.style.pointerEvents = "auto";
-             body.style.opacity ="1";
-
+           hideloaderWithoutHome()
 }
 </script>
 
