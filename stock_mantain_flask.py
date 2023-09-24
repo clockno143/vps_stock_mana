@@ -118,6 +118,7 @@ def edit_stock_qty(dbName):
         reqObj['uid'] = str(data['uid'])
         reqObj['qty'] = abs(int(data['qty']))
         reqObj['date'] = data['date']
+        reqObj['qtyBfr'] = data['qtyBfr']
         if(int(data['qty'])>0):
             reqObj['stockLoaded'] = 'stockLoaded'
             reqObj['deliveredTo'] = 'IN'

@@ -316,7 +316,8 @@ font-size: 2.7rem;        }
     </script>
     <div class="popup-container" style="justify-content: start;flex-direction: column;" id="QtyEditPopupContainer">
          <form>
-      <h2 style="display:none" id="itemHeader"></h2>
+      <h2 style="display:none" id="itemHeader">
+                <h2 style="display:none" id="totalQty"></h2>
              <h2 id="itemLable"></h2>
 
       <label for="quantity">Quantity:</label>
@@ -335,8 +336,8 @@ font-size: 2.7rem;        }
              <table class ="deliverTableClass" id="dataTable">
         <thead>
             <tr>
-                <th>sno</th>
                 <th>Date</th>
+                <th>Before</th>
                 <th>From</th>
                 <th>To</th>
                 <th>QTY</th>
@@ -456,13 +457,13 @@ window.addEventListener("load", function () {
         <th style="width: 40%;">QTY Edit </th>
   </tr>
     {% for item in items: %}
-  <tr class = {{item.uid}}  headers= "{{item.item}}"   style="text-align":center>
-      <td  class ={{item.uid}} headers= "{{item.item}}" >{{item.item}}</td>
-      <td class ={{item.uid}} headers= "{{item.item}}">{{item.itemDescription}}</td>
-      <td class ={{item.uid}} headers= "{{item.item}}"> {{item.qty}}</td>
+  <tr class = {{item.uid}} lang ={{item.qty}} headers= "{{item.item}}"   style="text-align":center>
+      <td  class ={{item.uid}} lang ={{item.qty}} headers= "{{item.item}}" >{{item.item}}</td>
+      <td class ={{item.uid}} lang ={{item.qty}} headers= "{{item.item}}">{{item.itemDescription}}</td>
+      <td class ={{item.uid}} lang ={{item.qty}} headers= "{{item.item}}"> {{item.qty}}</td>
       <td class="">
       <input type="number"  style="max-width: 8.5em;" id={{item.uid}}  placeholder="Edit qty" ><span>
-          <button class="save-button" onclick="editQty({{item.uid}})">Save</button></span>
+          <button class="save-button" onclick="editQty({{item.uid}},{{item.qty}})">Save</button></span>
             <span ><button class="edit-icon" onclick="showEditItemPopup({{item.uid}},'{{item.item}}', '{{item.itemDescription}}')" >&#9998;</button></span>
       </td>
   </tr>
@@ -507,11 +508,12 @@ window.addEventListener("load", function () {
 
 
      <script>
-         function editQty(uid){
+         function editQty(uid,qtyBfr){
             const qty = document.getElementById(uid).value
             const data = {
         uid:uid,
         qty: qty,
+        qtyBfr:qtyBfr,
         date:new Date()
       };
             showloader()
@@ -568,17 +570,21 @@ function home(){
       .then(response => {
         document.getElementById('itemHeader').innerHTML = response.item;
         document.getElementById('itemLable').innerHTML = event.target.headers;
+        document.getElementById('totalQty').innerHTML = event.target.lang;
+
 
          const tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
             tableBody.innerHTML = ''; // Clear existing rows
 
             response.itemDeliveries.forEach((item, index) => {
                 const row = tableBody.insertRow();
-                row.innerHTML = `<td class = ${item.stockLoaded}>${index + 1}</td>
+                row.innerHTML = `
                                  <td class = ${item.stockLoaded}>${item.date}</td>
+                                  <td class = ${item.stockLoaded} >${item.qtyBfr}</td>
                                  <td class = ${item.stockLoaded}>${item.deliveredBy}</td>
                                  <td class = ${item.stockLoaded}>${item.deliveredTo}</td>
-                                 <td class = ${item.stockLoaded} >${item.qty}</td>`;
+                                 <td class = ${item.stockLoaded} >${item.qty}</td>
+                                `;
             });
       })
       .catch(error => {
@@ -618,13 +624,16 @@ function home(){
       const deliveredBy = document.getElementById("deliveredBy").value;
       const deliveredTo = document.getElementById("deliveredTo").value;
       const qty = document.getElementById("qty").value;
+      const qtyBfr = document.getElementById("totalQty").innerHTML;
+
 
       const data = {
         uid:item,
         date: new Date(),
         deliveredBy: deliveredBy,
         deliveredTo: deliveredTo,
-        qty:parseInt(qty)
+        qty:parseInt(qty),
+        qtyBfr:qtyBfr
       };
       const url = '/saveDeliveryEntry/'+getDb()
             showloader()
