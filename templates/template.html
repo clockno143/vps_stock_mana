@@ -162,6 +162,9 @@ button {
 td.stockLoaded{
     background-color: yellow;
 }
+ td.stockVerified{
+    background-color:green;
+    }
 
 /* Mobile responsive styles */
 @media (pointer:coarse) {
@@ -210,6 +213,9 @@ font-size: 2.7rem;        }
     button{
      font-size: 2.9rem !important;
       margin-left: 2% !important;
+    }
+    td.stockVerified{
+    background-color:green;
     }
     td.stockLoaded{
     background-color: yellow;
@@ -332,7 +338,12 @@ font-size: 2.7rem;        }
       <button type="button" class="button" onclick="hidePopup('QtyEditPopupContainer')">Close</button>
         <button type="button" class="button" onclick="saveItemDelivery()">Save</button>
                </form>
-         <div class="delivTable">
+        <div>
+        <label style="width:25%" for="DateFilter">Filter:</label>
+        <input  type="date" id="DateFilter" name="Filter">
+        <button type="button" class="button" type="submit" onclick="filterInnertable()">Filter</button>
+            </div>
+        <div class="delivTable">
              <table class ="deliverTableClass" id="dataTable">
         <thead>
             <tr>
@@ -381,6 +392,47 @@ font-size: 2.7rem;        }
 
   </form>
        </div>
+<script>
+   function filterInnertable(){
+    date = document.getElementById("DateFilter").value
+    rowId = localStorage.getItem('uid');
+    console.log(date);
+
+     const body ={
+        "filterDate":date
+        }
+    let url = "/getDeliveryEntries/"+getDb()+"/".concat(rowId)
+                showloader()
+        fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+           body: JSON.stringify(body)
+      })
+      .then(response => response.json())
+      .then(response => {
+
+         const tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = ''; // Clear existing rows
+            response.itemDeliveries.forEach((item, index) => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                                 <td class = ${item.stockLoaded}  onClick = confirmtoUpdate(${item.uid}) >${item.date}</td>
+                                  <td class = ${item.stockLoaded}>${item.qtyBfr}</td>
+                                 <td class = ${item.stockLoaded}>${item.deliveredBy}</td>
+                                 <td class = ${item.stockLoaded}>${item.deliveredTo}</td>
+                                 <td class = ${item.stockLoaded}>${item.qty}</td>
+                                `;
+            });
+                  hideloaderWithoutHome()
+      })
+      .catch(error => {
+            hideloaderWithoutHome()
+      });
+
+      }
+</script>
       <script>
 
     function saveData() {
@@ -506,7 +558,6 @@ window.addEventListener("load", function () {
 
 
 
-
      <script>
          function editQty(uid,qtyBfr){
             const qty = document.getElementById(uid).value
@@ -551,39 +602,84 @@ function home(){
 }
 </script>
 
-   <script >
-         document.getElementById('myTable').addEventListener('click',function(){showElem(event)},false );
-         function showElem (event) {
-         console.log('Clicked row ID:', event);
+<script>
+        function confirmtoUpdate(uid){
+            console.log('Clicked row ID:', event);
+            event.target.headers =true;
+            if(window.confirm("Did you Visit gorden")){
+                         console.log(uid);
+                         const url = '/updateDeliveryEntry/'+getDb()
+            showloader()
+            let date = event.target.innerHTML
+            const data = {
+        uid:uid,
+        date: date,
+      };
+      fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response)
+      .then(response => {
+      hideloader()
+              showToast("success","success")
+      })
+      .catch(error => {
+            hideloader()
+           showToast("error","error")
+      });
+    }x
+
+
+        }
+
+</script>
+
+   <script>
+         document.getElementById('myTable').addEventListener('click',function(){
+         today = new Date();
+          today.setDate(today.getDate() - 30);
+         showElem(event,today)},false );
+         function showElem (event,filtDate) {
+         localStorage.setItem("uid",event.target.classList[0]);
+         filtDate = new Date(filtDate);
       if (event.target.headers) {
         document.getElementById('QtyEditPopupContainer').style.display = 'flex';
         const rowId = event.target.classList[0];
         console.log('Clicked row ID:', rowId);
+        const body ={
+        "filterDate":filtDate
+        }
          let url = "/getDeliveryEntries/"+getDb()+"/".concat(rowId)
         fetch(url, {
-        method: 'GET',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+           body: JSON.stringify(body)
       })
       .then(response => response.json())
       .then(response => {
         document.getElementById('itemHeader').innerHTML = response.item;
         document.getElementById('itemLable').innerHTML = event.target.headers;
         document.getElementById('totalQty').innerHTML = event.target.lang;
-
-
+        let month = filtDate.getMonth()+1
+        let date = filtDate.getFullYear()+"-"+month+"-"+filtDate.getDate();
+           document.getElementById('DateFilter').value = date;
          const tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
             tableBody.innerHTML = ''; // Clear existing rows
 
             response.itemDeliveries.forEach((item, index) => {
                 const row = tableBody.insertRow();
                 row.innerHTML = `
-                                 <td class = ${item.stockLoaded}>${item.date}</td>
-                                  <td class = ${item.stockLoaded} >${item.qtyBfr}</td>
+                                 <td class = ${item.stockLoaded}  onClick = confirmtoUpdate(${item.uid}) >${item.date}</td>
+                                  <td class = ${item.stockLoaded}>${item.qtyBfr}</td>
                                  <td class = ${item.stockLoaded}>${item.deliveredBy}</td>
                                  <td class = ${item.stockLoaded}>${item.deliveredTo}</td>
-                                 <td class = ${item.stockLoaded} >${item.qty}</td>
+                                 <td class = ${item.stockLoaded}>${item.qty}</td>
                                 `;
             });
       })

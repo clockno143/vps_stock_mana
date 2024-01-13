@@ -31,14 +31,16 @@ def saveItemTodb(db,obj):
     return db.stock.insert_one(obj);
 def saveDeliveryEntryToDb(db, obj):
     return db.itemDelivery.insert_one(obj);
-def getAllDeliveriesForItem(db,item):
-    return db.itemDelivery.find({"uid":item},{"_id":0}).sort("date",-1);
+def getAllDeliveriesForItem(db,item,filterDate):
+    return db.itemDelivery.find({"uid":item,"date":{"$gte":filterDate}},{"_id":0}).sort("date",-1);
 def updateDecQty(db,item,qty):
     item =int(item)
     return db.stock.update_one({"uid": item}, {"$inc":{"qty":qty}});
 def findAndModSeq(db):
     res=  db.sequence.find_one_and_update({},{"$inc":{"seq":1}});
     return res['seq']
+def UpdateSockVerified(db,uid,date):
+    return db.itemDelivery.update_one({"uid":uid ,"date":date},{"$set":{"stockLoaded":"stockVerified"}})
 def updateItem(db,uid,item, itemDisc):
      uid =int(uid)
      return db.stock.update_one({"uid": uid}, {"$set":{"item":item,"itemDescription":itemDisc}});
@@ -100,10 +102,11 @@ def save_deliveryEntry(dbName):
           print("Exception occured while saving Delivery Entry", e)
           return jsonify({"error": "An error occurred. Please try again later."}), 500
 
-@app.route('/getDeliveryEntries/<dbName>/<item>')
+@app.route('/getDeliveryEntries/<dbName>/<item>', methods=['PUT'])
 def get_itemDeliveries(dbName,item):
     db = getDb(client,dbName)
-    return jsonify({"item":item,"itemDeliveries":list(getAllDeliveriesForItem(db,item))}), 200
+    data = request.get_json()
+    return jsonify({"item":item,"itemDeliveries":list(getAllDeliveriesForItem(db,item,data['filterDate']))}), 200
 
 @app.route('/editStockQty/<dbName>', methods=['PUT'])
 @app.route('/editStockQty', methods=['PUT'])
@@ -131,6 +134,18 @@ def edit_stock_qty(dbName):
       except Exception as e:
           print("Exception occured while Editing Qty", e)
           return jsonify({"error": "An error occurred. Please try again later."}), 500
+
+@app.route('/updateDeliveryEntry/<dbName>', methods=['PUT'])
+@app.route('/editItem', methods=['PUT'])
+def updateItemDelToGreen(dbName):
+    data = request.get_json();
+    db = getDb(client, dbName)
+    try:
+        UpdateSockVerified(db,str(data['uid']),data['date'])
+        return jsonify({"success": "Successfully Updated Quantity."}), 200
+    except Exception as e:
+        print("Exception occured while Editing Item", e)
+        return jsonify({"error": "An error occurred. Please try again later."}), 500
 
 @app.route('/editItem/<dbName>', methods=['PUT'])
 @app.route('/editItem', methods=['PUT'])
